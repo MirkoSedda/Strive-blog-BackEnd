@@ -3,7 +3,6 @@ import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import uniqid from 'uniqid'
-import { response } from 'express'
 
 const currentFilePath = fileURLToPath(import.meta.url)
 
@@ -61,21 +60,12 @@ authorsRouter.delete(':authorId', (req, res) => {
 
 authorsRouter.post('/', (req, res) => {
   const newAuthor = { ...req.body, createdAt: new Date(), id: uniqid() }
-  console.log('this is the body', req.body.email)
   const authorsArray = JSON.parse(fs.readFileSync(authorsJSONPath))
   authorsArray.filter(a => a.email.includes(req.body.email))
-    ? res.status(400).send({ message: 'user already exists' })
+    ? res.status(400).send({
+        message: 'user already exists, please use another email address',
+      })
     : authorsArray.push(newAuthor)
   fs.writeFileSync(authorsJSONPath, JSON.stringify(authorsArray))
   res.status(201).send({ id: newAuthor.id })
 })
-
-// usersRouter.put('/:userId', (request, response) => {
-//   const usersArray = JSON.parse(fs.readFileSync(usersJSONPath))
-//   const index = usersArray.findIndex(user => user.id === request.params.userId)
-//   const oldUser = usersArray[index]
-//   const updatedUser = { ...oldUser, ...request.body, updatedAt: new Date() }
-//   usersArray[index] = updatedUser
-//   fs.writeFileSync(usersJSONPath, JSON.stringify(usersArray))
-//   response.send(updatedUser)
-// })
