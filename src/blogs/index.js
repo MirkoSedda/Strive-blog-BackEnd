@@ -50,7 +50,7 @@ blogsRouter.get('/', (req, res, next) => {
     const blogs = getBlog()
 
     if (req.query && req.query.name) {
-      const filteredBlogs = blogs.filter(blog => blog.id === req.query._id)
+      const filteredBlogs = blogs.filter(blog => blog.id === req.query.id)
       res.send(filteredBlogs)
     } else {
       res.send(blogs)
