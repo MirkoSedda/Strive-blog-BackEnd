@@ -6,31 +6,20 @@ import uniqid from 'uniqid'
 import createHttpError from 'http-errors'
 import { validationResult } from 'express-validator'
 import { newAuthorValidation } from './validation.js'
+import {getAuthors, writeAuthors} from '../lib/fs-tools.js'
 
 const authorsRouter = express.Router()
 
-const authorsJsonPath = join(
-  dirname(fileURLToPath(import.meta.url)),
-  'authors.json'
-)
-
-console.log(authorsJsonPath)
-
-const getAuthor = () => JSON.parse(fs.readFileSync(authorsJsonPath))
-
-const writeAuthor = arr =>
-  fs.writeFileSync(authorsJsonPath, JSON.stringify(arr))
-
 // POST AUTHOR API ROUTE
 
-authorsRouter.post('/', newAuthorValidation, (req, res, next) => {
+authorsRouter.post('/', newAuthorValidation, async(req, res, next) => {
   try {
     const errorsList = validationResult(req)
     if (errorsList.isEmpty()) {
       const newAuthor = { ...req.body, createdAt: new Date(), id: uniqid() }
-      const authorsArray = getAuthor()
+      const authorsArray = await getAuthors()
       authorsArray.push(newAuthor)
-      writeAuthor(authorsArrays)
+     writeAuthors(authorsArray)
 
       res.status(201).send({ id: newAuthor.id })
     } else {
@@ -45,12 +34,12 @@ authorsRouter.post('/', newAuthorValidation, (req, res, next) => {
 
 //MODIFY AUTHOR API ROUTE
 
-authorsRouter.post('/checkEmail', newAuthorValidation, (req, res, next) => {
+authorsRouter.post('/checkEmail', newAuthorValidation, async(req, res, next) => {
   try {
     const errorsList = validationResult(req)
     if (errorsList.isEmpty()) {
       const newAuthor = { ...req.body, createdAt: new Date(), id: uniqid() }
-      const authorsArray = getAuthor()
+      const authorsArray = await getAuthors()
       const exist = authorsArray.some(author => author.email === req.body.email)
       if (exist) {
         res.status(400).send({
@@ -58,7 +47,7 @@ authorsRouter.post('/checkEmail', newAuthorValidation, (req, res, next) => {
         })
       } else {
         authorsArray.push(newAuthor)
-        writeAuthor(authorsArrays)
+        writeAuthors(authorsArrays)
         res.status(201).send({ id: newAuthor.id })
       }
     } else {
@@ -73,9 +62,9 @@ authorsRouter.post('/checkEmail', newAuthorValidation, (req, res, next) => {
 
 //GET ALL AUTHORS API ROUTE
 
-authorsRouter.get('/', (req, res, next) => {
+authorsRouter.get('/', async(req, res, next) => {
   try {
-    const authors = getAuthor()
+    const authors = await getAuthors()
 
     if (req.query && req.query.name) {
       const filteredAuthors = authors.filter(
@@ -92,9 +81,9 @@ authorsRouter.get('/', (req, res, next) => {
 
 //GET AUTHOR API ROUTE
 
-authorsRouter.get('/:authorId', (req, res, next) => {
+authorsRouter.get('/:authorId', async(req, res, next) => {
   try {
-    const authors = getAuthor()
+    const authors = await getAuthors()
     const author = authors.find(author => author.id === req.params.authorId)
     if (author) {
       res.send(author)
@@ -113,15 +102,15 @@ authorsRouter.get('/:authorId', (req, res, next) => {
 
 //MODIFY AUTHOR
 
-authorsRouter.put('/:authorId', (req, res, next) => {
+authorsRouter.put('/:authorId', async(req, res, next) => {
   try {
-    const authors = getAuthor()
+    const authors = await getAuthors()
     const index = authors.findIndex(author => author.id === req.params.authorId)
     if (index !== -1) {
       const oldAuthor = authors[index]
       const updatedAuthor = { ...oldAuthor, ...req.body, updatedAt: new Date() }
       authors[index] = updatedAuthor
-      writeAuthor(authors)
+      writeAuthors(authors)
       res.send(updatedAuthor)
     } else {
       next(
@@ -135,13 +124,13 @@ authorsRouter.put('/:authorId', (req, res, next) => {
 
 //DELETE AUTHOR API ROUTE
 
-authorsRouter.delete('/:authorId', (req, res, next) => {
+authorsRouter.delete('/:authorId', async(req, res, next) => {
   try {
-    const authors = getAuthor()
+    const authors = await getAuthors()
 
     const author = authors.filter(author => author.id !== req.params.authorId)
 
-    writeAuthor(author)
+    writeAuthors(author)
 
     res.send(author)
   } catch (err) {

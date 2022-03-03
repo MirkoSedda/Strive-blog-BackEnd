@@ -7,14 +7,20 @@ import {
   notFoundHandler,
   serverErrorHandler,
 } from './errorHandlers.js'
+import { join } from 'path'
 import authorsRouter from './authors/index.js'
 import blogsRouter from './blogs/index.js'
+import filesRouter from './files/index.js'
 
 const server = express()
 
 const port = 3001
 
+const publicFolderPath = join(process.cwd(), "./public")
+
 //MIDDLEWARES
+
+server.use(express.static(publicFolderPath))
 
 server.use(cors())
 
@@ -24,6 +30,7 @@ server.use(express.json())
 
 server.use('/authors', authorsRouter)
 server.use('/blogs', blogsRouter)
+server.use('/files', filesRouter)
 
 //ERROR HANDLERS
 server.use(badRequestHandler)
