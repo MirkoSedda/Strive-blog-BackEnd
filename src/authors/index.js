@@ -6,20 +6,20 @@ import uniqid from 'uniqid'
 import createHttpError from 'http-errors'
 import { validationResult } from 'express-validator'
 import { newAuthorValidation } from './validation.js'
-import {getAuthors, writeAuthors} from '../lib/fs-tools.js'
+import { getAuthors, writeAuthors } from '../lib/fs-tools.js'
 
 const authorsRouter = express.Router()
 
 // POST AUTHOR API ROUTE
 
-authorsRouter.post('/', newAuthorValidation, async(req, res, next) => {
+authorsRouter.post('/', newAuthorValidation, async (req, res, next) => {
   try {
     const errorsList = validationResult(req)
     if (errorsList.isEmpty()) {
       const newAuthor = { ...req.body, createdAt: new Date(), id: uniqid() }
       const authorsArray = await getAuthors()
       authorsArray.push(newAuthor)
-     writeAuthors(authorsArray)
+      writeAuthors(authorsArray)
 
       res.status(201).send({ id: newAuthor.id })
     } else {
@@ -34,7 +34,7 @@ authorsRouter.post('/', newAuthorValidation, async(req, res, next) => {
 
 //MODIFY AUTHOR API ROUTE
 
-authorsRouter.post('/checkEmail', newAuthorValidation, async(req, res, next) => {
+authorsRouter.post('/checkEmail', newAuthorValidation, async (req, res, next) => {
   try {
     const errorsList = validationResult(req)
     if (errorsList.isEmpty()) {
@@ -62,7 +62,7 @@ authorsRouter.post('/checkEmail', newAuthorValidation, async(req, res, next) => 
 
 //GET ALL AUTHORS API ROUTE
 
-authorsRouter.get('/', async(req, res, next) => {
+authorsRouter.get('/', async (req, res, next) => {
   try {
     const authors = await getAuthors()
 
@@ -81,7 +81,7 @@ authorsRouter.get('/', async(req, res, next) => {
 
 //GET AUTHOR API ROUTE
 
-authorsRouter.get('/:authorId', async(req, res, next) => {
+authorsRouter.get('/:authorId', async (req, res, next) => {
   try {
     const authors = await getAuthors()
     const author = authors.find(author => author.id === req.params.authorId)
@@ -102,7 +102,7 @@ authorsRouter.get('/:authorId', async(req, res, next) => {
 
 //MODIFY AUTHOR
 
-authorsRouter.put('/:authorId', async(req, res, next) => {
+authorsRouter.put('/:authorId', async (req, res, next) => {
   try {
     const authors = await getAuthors()
     const index = authors.findIndex(author => author.id === req.params.authorId)
@@ -124,13 +124,13 @@ authorsRouter.put('/:authorId', async(req, res, next) => {
 
 //DELETE AUTHOR API ROUTE
 
-authorsRouter.delete('/:authorId', async(req, res, next) => {
+authorsRouter.delete('/:authorId', async (req, res, next) => {
   try {
     const authors = await getAuthors()
 
     const author = authors.filter(author => author.id !== req.params.authorId)
 
-    writeAuthors(author)
+    await writeAuthors(author)
 
     res.send(author)
   } catch (err) {

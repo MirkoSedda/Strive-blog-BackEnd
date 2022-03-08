@@ -6,28 +6,21 @@ import uniqid from 'uniqid'
 import createHttpError from 'http-errors'
 import { validationResult } from 'express-validator'
 import { newBlogValidation } from './validation.js'
+import { getBlogs, writeBlogs } from '../lib/fs-tools.js'
+
 
 const blogsRouter = express.Router()
 
-const blogsJsonPath = join(
-  dirname(fileURLToPath(import.meta.url)),
-  'blogs.json'
-)
-
-const getBlog = () => JSON.parse(fs.readFileSync(blogsJsonPath))
-
-const writeBlog = arr => fs.writeFileSync(blogsJsonPath, JSON.stringify(arr))
-
 // POST BLOG API ROUTE
 
-blogsRouter.post('/', newBlogValidation, (req, res, next) => {
+blogsRouter.post('/', newBlogValidation, async (req, res, next) => {
   try {
     const errorsList = validationResult(req)
     if (errorsList.isEmpty()) {
       const newBlog = { ...req.body, createdAt: new Date(), id: uniqid() }
-      const blogArray = getBlog()
+      const blogArray = await getBlogs()
       blogArray.push(newBlog)
-      writeBlog(blogArray)
+      await writeBlogs(blogArray)
       res.status(201).send({ id: newBlog.id })
     } else {
       next(
@@ -41,13 +34,36 @@ blogsRouter.post('/', newBlogValidation, (req, res, next) => {
   }
 })
 
-//MODIFY BLOG API ROUTE
+//ADD BLOG COMMENT API ROUTE
+
+blogsRouter.post('/:blogId/comments', async (req, res, next) => {
+  try {
+    const blogs = await getBlogs()
+    const blog = blogs.find(blog => blog.id === req.params.blogId)
+    const blogComments = blog.comments.map(comment => comment)
+    const updatedBlogComments = { ...blogComments, ...blogComments, updatedAt: new Date() }
+    blogComments.push(updatedBlogComments)
+    await writeBlogs(blogComments)
+    if (blogs) {
+      res.send(blogComments)
+    } else {
+      next(
+        createHttpError(
+          404,
+          `The blog with id ${req.params.blogId} was not found!`
+        )
+      )
+    }
+  } catch (err) {
+    next(err)
+  }
+})
 
 //GET ALL BLOG API ROUTE
 
-blogsRouter.get('/', (req, res, next) => {
+blogsRouter.get('/', async (req, res, next) => {
   try {
-    const blogs = getBlog()
+    const blogs = await getBlogs()
 
     if (req.query && req.query.name) {
       const filteredBlogs = blogs.filter(blog => blog.id === req.query.id)
@@ -62,9 +78,9 @@ blogsRouter.get('/', (req, res, next) => {
 
 //GET BLOG API ROUTE
 
-blogsRouter.get('/:blogId', (req, res, next) => {
+blogsRouter.get('/:blogId', async (req, res, next) => {
   try {
-    const blogs = getBlog()
+    const blogs = await getBlogs()
     const blog = blogs.find(blog => blog.id === req.params.blogId)
     if (blog) {
       res.send(blog)
@@ -81,17 +97,41 @@ blogsRouter.get('/:blogId', (req, res, next) => {
   }
 })
 
-//MODIFY BLOG
+//GET BLOG COMMENTS API ROUTE
 
-blogsRouter.put('/:blogId', (req, res, next) => {
+blogsRouter.get('/:blogId/comments', async (req, res, next) => {
   try {
-    const blogs = getBlog()
+    const blogs = await getBlogs()
+    const blog = blogs.find(blog => blog.id === req.params.blogId)
+    const comments = blog.comments.map(comment => comment)
+    if (blog) {
+      res.send(comments)
+    } else {
+      next(
+        createHttpError(
+          404,
+          `The blog with id ${req.params.blogId} was not found!`
+        )
+      )
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+
+
+//MODIFY BLOG POST
+
+blogsRouter.put('/:blogId', async (req, res, next) => {
+  try {
+    const blogs = await getBlogs()
     const index = blogs.findIndex(blog => blog.id === req.params.blogId)
     if (index !== -1) {
       const oldBlog = blogs[index]
       const updatedBlog = { ...oldBlog, ...req.body, updatedAt: new Date() }
       blogs[index] = updatedBlog
-      writeBlog(blogs)
+      await writeBlogs(blogs)
       res.send(updatedBlog)
     } else {
       next(createHttpError(404, `Blog with id ${req.params.blogId} not found!`))
@@ -101,15 +141,17 @@ blogsRouter.put('/:blogId', (req, res, next) => {
   }
 })
 
+
+
 //DELETE BLOG API ROUTE
 
-blogsRouter.delete('/:blogId', (req, res, next) => {
+blogsRouter.delete('/:blogId', async (req, res, next) => {
   try {
-    const blogs = getBlog()
+    const blogs = await getBlogs()
 
     const blog = blogs.filter(blog => blog.id !== req.params.blogId)
 
-    writeBlog(blog)
+    writeBlogs(blog)
 
     res.send(blog)
   } catch (err) {

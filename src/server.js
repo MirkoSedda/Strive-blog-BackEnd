@@ -14,15 +14,28 @@ import filesRouter from './files/index.js'
 
 const server = express()
 
-const port = 3001
+const port = process.env.PORT
 
 const publicFolderPath = join(process.cwd(), "./public")
+
+const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL]
 
 //MIDDLEWARES
 
 server.use(express.static(publicFolderPath))
 
-server.use(cors())
+server.use(cors({
+  origin: function (origin, next) {
+    console.log('origin: ' + origin)
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      console.log('origin allowed')
+      next(null, true)
+    } else {
+      console.log('origin not allowed')
+      next(new Error('cors error!'))
+    }
+  },
+}))
 
 server.use(express.json())
 
