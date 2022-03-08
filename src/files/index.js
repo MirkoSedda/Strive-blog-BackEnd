@@ -51,7 +51,7 @@ filesRouter.post("/authors/:id/cloudinaryUpload", cloudinaryAuthorUploader, asyn
 
       const oldAuthor = authors[index]
 
-      const updatedAuthor = { ...oldAuthor, author: req.file.path }
+      const updatedAuthor = { ...oldAuthor, avatar: req.file.path }
 
       authors[index] = updatedAuthor
 
@@ -90,7 +90,7 @@ filesRouter.post("/blogs/:id/cloudinaryUpload", cloudinaryBlogUploader, async (r
 
       const oldBlog = blogs[index]
 
-      const updatedBlog = { ...oldBlog, blog: req.file.path }
+      const updatedBlog = { ...oldBlog, cover: req.file.path }
 
       blogs[index] = updatedBlog
 
