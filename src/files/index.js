@@ -1,10 +1,16 @@
 import express from 'express';
 import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary';
+import { createReadStream } from 'fs'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import createHttpError from 'http-errors'
+import { join } from 'path'
+import { pipeline } from "stream"
+import { getPDFReadableStream } from '../utils/pdf-tools.js'
+const blogsJsonPath = join(process.cwd(), "./blogs/blog.json")
+console.log(blogsJsonPath);
 
-import { saveAuthorsPictures, saveBlogsPictures, getAuthors, writeAuthors, getBlogs, writeBlogs } from '../lib/fs-tools.js'
+const getBlogReadableStream = () => createReadStream(blogsJsonPath)
 
 const filesRouter = express.Router()
 
@@ -106,10 +112,46 @@ filesRouter.post("/blogs/:id/cloudinaryUpload", cloudinaryBlogUploader, async (r
   }
 })
 
+// filesRouter.get("/downloadJSON", (req, res, next) => {
+//   try {
+//     SOURCES (file on disk, http requests, ...) --> DESTINATIONS (file on disk, terminal, http responses, ...)
+//     SOURCE (file on disk: books.json) --> DESTINATION (http response)
+
+//     res.setHeader("Content-Disposition", "attachment; filename=books.json.gz") // This header tells the browser to open the "save file on disk" dialog
+//     const source = getBookReadableStream()
+//     const transform = createGzip()
+//     const destination = res
+
+//     pipeline(source, transform, destination, err => {
+//       console.log(err)
+//     })
+//   } catch (error) {
+//     next(error)
+//   }
+// })
+
+filesRouter.get("/downloadPDF", (req, res, next) => {
+  try {
+    // SOURCE (readable stream from pdfmake) --> DESTINATION (http response)
+
+    res.setHeader("Content-Disposition", "attachment; filename=example.pdf") // This header tells the browser to open the "save file on disk" dialog
+
+    const source = getPDFReadableStream(getBlogReadableStream())
+    const destination = res
+
+    pipeline(source, destination, err => {
+      console.log(err)
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+export default filesRouter
 
 // ------------------------------------
 
-import fs from 'fs-extra';
+//import fs from 'fs-extra';
 // import { fileURLToPath } from 'url'
 // import { dirname, join } from 'path';
 
@@ -156,4 +198,4 @@ import fs from 'fs-extra';
 //   }
 // })
 
-export default filesRouter
+

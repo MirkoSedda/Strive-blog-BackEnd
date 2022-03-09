@@ -3,6 +3,7 @@ import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./authors/index.js";
 import blogsRouter from "./blogs/index.js";
+import filesRouter from "./files/index.js";
 import { errorHandler } from "./utils/errorHandlers.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -34,6 +35,8 @@ server.use(express.static(publicDirectory));
 server.use("/authors", authorsRouter);
 
 server.use("/blogs", blogsRouter);
+
+server.use("/files", filesRouter)
 
 server.use(errorHandler);
 
