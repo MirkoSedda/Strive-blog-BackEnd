@@ -45,6 +45,9 @@ server.on("error", (error) =>
   console.log(`❌ Server is not running due to : ${error}`)
 );
 
+console.table(listEndpoints(server))
+
+
 // import express from 'express'
 // import cors from 'cors'
 // import listEndpoints from 'express-list-endpoints'
@@ -103,4 +106,3 @@ server.on("error", (error) =>
 //   console.log(`server is listening on port ${port}`)
 // })
 
-// console.table(listEndpoints(server))

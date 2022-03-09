@@ -12,18 +12,19 @@ import {
 } from "../utils/validation.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const blogsFilePath = path.join(__dirname, "blogs.json");
+const blogsFilePath = path.join(__dirname, "blog.json");
 const router = express.Router();
 
 // get all blogs
 router.get("/", async (req, res, next) => {
   try {
+    console.log("'blogs")
     const fileAsBuffer = fs.readFileSync(blogsFilePath);
     const fileAsString = fileAsBuffer.toString();
     const fileAsJSON = JSON.parse(fileAsString);
     res.send(fileAsJSON);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -42,7 +43,7 @@ router.get(
       );
       res.send(filtered);
     } catch (error) {
-      res.send(500).send({ message: error.message });
+      res.status(500).send({ message: error.message });
     }
   }
 );
@@ -73,7 +74,7 @@ router.post(
 
       res.send(blog);
     } catch (error) {
-      res.send(500).send({ message: error.message });
+      res.status(500).send({ message: error.message });
     }
   }
 );
@@ -95,7 +96,7 @@ router.get("/:id", async (req, res, next) => {
     }
     res.send(blog);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -117,7 +118,7 @@ router.get("/:id/comments", async (req, res, next) => {
     blog.comments = blog.comments || [];
     res.send(blog.comments);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -142,7 +143,7 @@ router.delete("/:id", async (req, res, next) => {
     fs.writeFileSync(blogsFilePath, JSON.stringify(fileAsJSONArray));
     res.status(204).send();
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -175,7 +176,7 @@ router.put("/:id", async (req, res, next) => {
     fs.writeFileSync(blogsFilePath, JSON.stringify(fileAsJSONArray));
     res.send(changedblog);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -216,7 +217,7 @@ router.put(
       res.send(changedblog);
     } catch (error) {
       console.log(error);
-      res.send(500).send({ message: error.message });
+      res.status(500).send({ message: error.message });
     }
   }
 );

@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
     const fileAsJSON = JSON.parse(fileAsString);
     res.send(fileAsJSON);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -49,7 +49,7 @@ router.post("/", async (req, res, next) => {
 
     res.send(author);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -72,7 +72,7 @@ router.get("/:id", async (req, res, next) => {
     }
     res.send(author);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -99,7 +99,7 @@ router.delete("/:id", async (req, res, next) => {
     fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));
     res.status(204).send();
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -132,7 +132,7 @@ router.put("/:id", async (req, res, next) => {
     fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));
     res.send(changedAuthor);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 });
 
@@ -166,7 +166,7 @@ router.put(
       fs.writeFileSync(authorsFilePath, JSON.stringify(fileAsJSONArray));
       res.send(changedAuthor);
     } catch (error) {
-      res.send(500).send({ message: error.message });
+      res.status(500).send({ message: error.message });
     }
   }
 );
