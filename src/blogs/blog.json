@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "category": "ARTICLE NEW",
+    "title": "ARTICLE TITLE",
+    "cover": "ARTICLE COVER (IMAGE LINK)",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "createdAt": "2022-03-02T17:06:17.051Z",
+    "id": "39zn41sg1l09t955o",
+    "updatedAt": "2022-03-02T17:27:14.983Z",
+    "comments": [
+      {
+        "name": "AUTHOR AVATAR NAME",
+        "text": "awesome"
+      }
+    ]
+  },
+  {
+    "category": "ARTICLE 1",
+    "title": "ARTICLE 1",
+    "cover": "ARTICLE 1 (IMAGE LINK)",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "createdAt": "2022-03-02T17:06:17.051Z",
+    "id": "39zn41sg1l09t955o",
+    "updatedAt": "2022-03-02T17:27:14.983Z",
+    "comments": [
+      {
+        "name": "AUTHOR AVATAR NAME",
+        "text": "awesome"
+      }
+    ]
+  },
+  {
+    "category": "ARTICLE 2",
+    "title": "ARTICLE 2",
+    "cover": "ARTICLE 2 (IMAGE LINK)",
+    "readTime": { "value": 2, "unit": "minute" },
+    "author": { "name": "AUTHOR AVATAR NAME", "avatar": "AUTHOR AVATAR LINK" },
+    "createdAt": "2022-03-02T17:06:17.051Z",
+    "id": "39zn41sg1l09t955o",
+    "updatedAt": "2022-03-02T17:27:14.983Z",
+    "comments": [
+      {
+        "name": "AUTHOR AVATAR NAME",
+        "text": "awesome"
+      }
+    ]
+  }
+]

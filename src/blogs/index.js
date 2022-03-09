@@ -181,7 +181,7 @@ router.put("/:id", async (req, res, next) => {
 });
 
 router.put(
-  "/:id/comment",
+  "/:id/comments",
   checkCommentSchema,
   checkValidationResult,
   async (req, res, next) => {
